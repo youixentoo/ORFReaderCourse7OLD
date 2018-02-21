@@ -1,0 +1,24 @@
+-classpath
+'C:/Users/thijs/.m2/repository/org/biojava/biojava-core/4.2.11/biojava-core-4.2.11.jar;C:/Users/thijs/.m2/repository/org/swinglabs/swing-layout/1.0.3/swing-layout-1.0.3.jar;C:/Users/thijs/.m2/repository/org/slf4j/slf4j-api/1.7.14/slf4j-api-1.7.14.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'D:/School/Java/Course8/ORF/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2018. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'D:/School/Java/Course8/ORF/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'ORF 1.0 API'
+-linkoffline
+'https://docs.oracle.com/javase/8/docs/api' 'D:/School/Java/Course8/ORF/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'ORF 1.0 API'
