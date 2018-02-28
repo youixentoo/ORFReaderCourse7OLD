@@ -6,38 +6,64 @@
 package com.course6.orf;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Point;
+
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.io.InputStreamReader;
+
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.*;
+import javax.swing.BorderFactory;
+
 import javax.swing.JFileChooser;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.Border;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
+
 import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.io.*;
-
-import java.util.regex.*;
-import javax.swing.JComboBox;
-import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
 import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
+import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
+import org.biojava.nbio.core.sequence.template.SequenceView;
 
 class FastaFilter extends javax.swing.filechooser.FileFilter {
 
     @Override
     public boolean accept(File file) {
         // Allow only directories, or files with ".txt" extension
-        return file.isDirectory() || file.getAbsolutePath().endsWith(".fasta");
+        return file.isDirectory() || file.getAbsolutePath().endsWith(".fasta") || file.getAbsolutePath().endsWith(".fa");
     }
 
     @Override
     public String getDescription() {
-        return "Fasta files (.fasta)";
+        return "Fasta files (.fasta, .fa)";
     }
+}
+
+class CustomPanel extends javax.swing.JPanel {
+
+    protected int start;
+    protected int end;
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        start = 10;
+        end = super.getWidth() - 10;
+        g.drawLine(start, 30, end, 30);
+    }
+
 }
 
 /**
@@ -63,6 +89,13 @@ public class ORFGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         fileChooser = new javax.swing.JFileChooser();
+        ShowDNASequence = new javax.swing.JFrame();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        showDNASeqTextArea = new javax.swing.JTextArea();
+        jMenuBar2 = new javax.swing.JMenuBar();
+        saveDNAAsFastaMenu = new javax.swing.JMenu();
+        showAsFastaMenu = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel1 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -71,26 +104,86 @@ public class ORFGUI extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         seqTextPane = new javax.swing.JEditorPane();
         readingFramesComboBox = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
+        totalORFsLabel = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        fittingPanel = new javax.swing.JPanel();
+        drawPanel = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        testText = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
+        jSeparator2 = new javax.swing.JSeparator();
+        exucuteBLAST = new javax.swing.JButton();
+        jSeparator3 = new javax.swing.JSeparator();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tempBLASTresults = new javax.swing.JTextArea();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         selectedORFField = new javax.swing.JTextArea();
+        jLabel4 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        ORFInfoField = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         openJMenu = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        showDNAofORFMenu = new javax.swing.JMenuItem();
 
         fileChooser.setFileFilter(new FastaFilter());
 
+        ShowDNASequence.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        ShowDNASequence.setSize(new java.awt.Dimension(500, 450));
+
+        showDNASeqTextArea.setColumns(20);
+        showDNASeqTextArea.setRows(5);
+        showDNASeqTextArea.setLineWrap(true);
+        jScrollPane6.setViewportView(showDNASeqTextArea);
+
+        saveDNAAsFastaMenu.setText("File");
+
+        showAsFastaMenu.setText("Show as Fasta...");
+        showAsFastaMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showAsFastaMenuActionPerformed(evt);
+            }
+        });
+        saveDNAAsFastaMenu.add(showAsFastaMenu);
+
+        jMenuItem1.setText("Save as Fasta...");
+        saveDNAAsFastaMenu.add(jMenuItem1);
+
+        jMenuBar2.add(saveDNAAsFastaMenu);
+
+        ShowDNASequence.setJMenuBar(jMenuBar2);
+
+        javax.swing.GroupLayout ShowDNASequenceLayout = new javax.swing.GroupLayout(ShowDNASequence.getContentPane());
+        ShowDNASequence.getContentPane().setLayout(ShowDNASequenceLayout);
+        ShowDNASequenceLayout.setHorizontalGroup(
+            ShowDNASequenceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ShowDNASequenceLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        ShowDNASequenceLayout.setVerticalGroup(
+            ShowDNASequenceLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(ShowDNASequenceLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("ORF Reader");
-        setResizable(false);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
         jLabel1.setText("ORF Reader");
 
         jTabbedPane1.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
         jTabbedPane1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         jLabel2.setText("Reading Frame:");
 
@@ -99,7 +192,9 @@ public class ORFGUI extends javax.swing.JFrame {
         jScrollPane2.setHorizontalScrollBar(null);
 
         seqTextPane.setEditable(false);
+        seqTextPane.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         seqTextPane.setToolTipText("");
+        seqTextPane.setMargin(new java.awt.Insets(0, 0, 0, 12));
         seqTextPane.setMinimumSize(new java.awt.Dimension(100, 22));
         seqTextPane.setName(""); // NOI18N
         seqTextPane.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -109,12 +204,16 @@ public class ORFGUI extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(seqTextPane);
 
-        readingFramesComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "0", "+1", "+2" }));
+        readingFramesComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "+1", "+2", "+3", "-1", "-2", "-3" }));
         readingFramesComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 readingFramesComboBoxActionPerformed(evt);
             }
         });
+
+        jLabel6.setText("Total ORFs found:");
+
+        totalORFsLabel.setText("No data");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -123,59 +222,160 @@ public class ORFGUI extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 847, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 843, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(readingFramesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(totalORFsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(readingFramesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(readingFramesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel6)
+                        .addComponent(totalORFsLabel)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 444, Short.MAX_VALUE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 440, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("All ORF's in file", jPanel1);
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        jLabel5.setText("Position on genome:");
+
+        drawPanel.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout drawPanelLayout = new javax.swing.GroupLayout(drawPanel);
+        drawPanel.setLayout(drawPanelLayout);
+        drawPanelLayout.setHorizontalGroup(
+            drawPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        drawPanelLayout.setVerticalGroup(
+            drawPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 127, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout fittingPanelLayout = new javax.swing.GroupLayout(fittingPanel);
+        fittingPanel.setLayout(fittingPanelLayout);
+        fittingPanelLayout.setHorizontalGroup(
+            fittingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(drawPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        fittingPanelLayout.setVerticalGroup(
+            fittingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(drawPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        testText.setColumns(20);
+        testText.setRows(5);
+        jScrollPane5.setViewportView(testText);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 871, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(fittingPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 532, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5))
+                        .addGap(0, 311, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 486, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fittingPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Selected ORF in genome", jPanel3);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+
+        exucuteBLAST.setText("BLAST");
+        exucuteBLAST.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exucuteBLASTActionPerformed(evt);
+            }
+        });
+
+        jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
+
+        tempBLASTresults.setColumns(20);
+        tempBLASTresults.setRows(5);
+        jScrollPane3.setViewportView(tempBLASTresults);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 871, Short.MAX_VALUE)
+            .addComponent(jSeparator2)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 631, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(exucuteBLAST)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 350, Short.MAX_VALUE)
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(434, 434, 434))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 486, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(210, 210, 210)
+                        .addComponent(exucuteBLAST)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("BLAST", jPanel2);
 
         jLabel3.setText("Selected ORF:");
 
+        selectedORFField.setEditable(false);
         selectedORFField.setColumns(20);
         selectedORFField.setRows(5);
         selectedORFField.setLineWrap(true);
         jScrollPane1.setViewportView(selectedORFField);
+
+        jLabel4.setText("ORF Data");
+
+        ORFInfoField.setEditable(false);
+        ORFInfoField.setColumns(20);
+        ORFInfoField.setRows(5);
+        jScrollPane4.setViewportView(ORFInfoField);
 
         jMenu1.setText("File");
 
@@ -188,6 +388,18 @@ public class ORFGUI extends javax.swing.JFrame {
         jMenu1.add(openJMenu);
 
         jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("View");
+
+        showDNAofORFMenu.setText("Show DNA sequence of selected ORF");
+        showDNAofORFMenu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showDNAofORFMenuActionPerformed(evt);
+            }
+        });
+        jMenu2.add(showDNAofORFMenu);
+
+        jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
 
@@ -203,16 +415,21 @@ public class ORFGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jTabbedPane1)
-                        .addContainerGap())
+                    .addComponent(jTabbedPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap())
         );
+
+        layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jScrollPane1, jScrollPane4});
+
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -223,9 +440,13 @@ public class ORFGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel3)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(45, Short.MAX_VALUE))
         );
 
@@ -248,35 +469,37 @@ public class ORFGUI extends javax.swing.JFrame {
         } else {
             System.out.println("File access cancelled by user.");
         }
-
-
     }//GEN-LAST:event_openJMenuActionPerformed
 
     private void readingFramesComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readingFramesComboBoxActionPerformed
-        JComboBox<String> combo = (JComboBox<String>) evt.getSource();
-        readingFrame = Integer.parseInt((String) combo.getSelectedItem());
-        setReadingFrameSequence();
+        readingFrames(evt);
     }//GEN-LAST:event_readingFramesComboBoxActionPerformed
 
     private void seqTextPaneMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_seqTextPaneMouseClicked
-        Point mousePoint = evt.getPoint();
-        highlightedItemAndStats(mousePoint);
-        //System.out.println(seqTextPane.getContentType());
+        highlightedItemAndStats(evt);
     }//GEN-LAST:event_seqTextPaneMouseClicked
-   
-    
-    // Gets the selected item on a mouse click and gets the start and end position of the highlight
-    private void highlightedItemAndStats(Point mousePoint){
-        String highlightededUnderMouse = HighlightLogics.getHighlightededUnderMouse(seqTextPane, mousePoint.x, mousePoint.y);
-        selectedORFField.setText(highlightededUnderMouse);
-        
-        BeginAndEnd location = HighlightLogics.getHighlightededItemUnderMouseInfo(seqTextPane, mousePoint.x, mousePoint.y);
-        System.out.println(location.toString());
-        
-        
-        System.out.println(highlightededUnderMouse);
+
+    private void exucuteBLASTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exucuteBLASTActionPerformed
+        BLAST();
+    }//GEN-LAST:event_exucuteBLASTActionPerformed
+
+    private void showDNAofORFMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showDNAofORFMenuActionPerformed
+        showDNASeqOfORF();
+    }//GEN-LAST:event_showDNAofORFMenuActionPerformed
+
+    private void showAsFastaMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showAsFastaMenuActionPerformed
+        showDNASeqAsFasta();
+    }//GEN-LAST:event_showAsFastaMenuActionPerformed
+
+    private void readingFrames(java.awt.event.ActionEvent evt) {
+        JComboBox<String> combo = (JComboBox<String>) evt.getSource();
+        readingFrame = (String) combo.getSelectedItem();
+
+        if (!sequenceString.isEmpty()) {
+            setReadingFrameSequence();
+        }
     }
-    
+
     // Gets the DNA string form the file
     private void readFile(String file) {
         // Leest een fasta bestand in dat wordt meegegeven van de fileChooser
@@ -287,7 +510,15 @@ public class ORFGUI extends javax.swing.JFrame {
             setReadingFrameSequence();
         } catch (IOException ex) {
             Logger.getLogger(ORFGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            System.out.println("Wrong file");
+            JOptionPane.showMessageDialog(this, "Incorrect file format");
         } catch (Exception exc) {
+            String errorMes = "Unknown error occurred:" + System.lineSeparator() + System.lineSeparator();
+            for (StackTraceElement what : exc.getStackTrace()) {
+                errorMes += (what + System.lineSeparator());
+            }
+            JOptionPane.showMessageDialog(this, errorMes);
             exc.printStackTrace();
         }
     }
@@ -295,47 +526,60 @@ public class ORFGUI extends javax.swing.JFrame {
     // Gets the Protein sequence from the selected reading frame.
     private void setReadingFrameSequence() {
         try {
+            DNASequence dnaSequence = null;
             // readingFrame is where to start reading, on index 0, 1, or 2. Defined with the comboBox in "readingFramesComboBoxActionPerformed".
-            DNASequence dnaSequence = new DNASequence(sequenceString.substring(readingFrame));
+            if ("-1".equals(readingFrame) | "-2".equals(readingFrame) | "-3".equals(readingFrame)) {
+                int readFrame = Integer.parseInt(readingFrame.replace("-", ""));
+                DNASequence tempSequence = new DNASequence(sequenceString);
+                SequenceView<NucleotideCompound> test = tempSequence.getReverseComplement();
+                dnaSequence = new DNASequence(test.getSequenceAsString().substring(readFrame - 1));
+            } else {
+                int readFrame = Integer.parseInt(readingFrame.replace("+", ""));
+                dnaSequence = new DNASequence(sequenceString.substring(readFrame - 1));
+            }
+
             ProteinSequence proteinSequence = dnaSequence.getRNASequence().getProteinSequence();
+            proteinLength = proteinSequence.getLength();
 //            System.out.println(dnaFasta);
             seqTextPane.setText(proteinSequence.toString());
             patternMatcher(proteinSequence);
 
         } catch (CompoundNotFoundException ex) {
             Logger.getLogger(ORFGUI.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (StringIndexOutOfBoundsException ex){
+        } catch (StringIndexOutOfBoundsException ex) {
             System.out.println("SringIndexOutOfBounds in setReadingFrameSequence");
             ex.printStackTrace();
         }
 
     }
-    
 
     // Searches and highlights all the ORFs
     private void patternMatcher(ProteinSequence sequence) {
+        int matches = 0;
         String seq = sequence.toString();
+        Matcher matcher;
 //        highlighting(m, m);
 
-        Pattern pattern = Pattern.compile("M[^\\*]{20,}");
-        Matcher matcher = pattern.matcher(seq);
-
-        while (matcher.find()) {
-//            matcher.group();
-            int start = matcher.start();
-            int end = matcher.end();
-            highlighting(start, end, new Color(64, 224, 208));
-        }
-
-        Pattern pat = Pattern.compile("\\*[^\\*M]{20,}");
+//        Pattern pattern = Pattern.compile("M[^\\*]{100,}");
+//        matcher = pattern.matcher(seq);
+//
+//        while (matcher.find()) {
+////            matcher.group();
+//            int start = matcher.start();
+//            int end = matcher.end();
+//            highlighting(start, end, new Color(64, 224, 208));
+//            matches++;
+//        }
+        Pattern pat = Pattern.compile("\\*[^\\*]{100,}");
         matcher = pat.matcher(seq);
 
         while (matcher.find()) {
             int start = matcher.start() + 1;
             int end = matcher.end();
-            highlighting(start, end, new Color(255, 255, 128));
+            highlighting(start, end, new Color(64, 224, 208));
+            matches++;
         }
-
+        totalORFsLabel.setText(String.valueOf(matches));
     }
 
     // Highlighting
@@ -347,6 +591,160 @@ public class ORFGUI extends javax.swing.JFrame {
         }
     }
 
+    // Gets the selected item on a mouse click and gets the start and end position of the highlight
+    private void highlightedItemAndStats(java.awt.event.MouseEvent evt) {
+        Point mousePoint = evt.getPoint();
+
+        if (!sequenceString.isEmpty()) {
+            String highlightededUnderMouse = HighlightLogics.getHighlightededUnderMouse(seqTextPane, mousePoint.x, mousePoint.y);
+            selectedORFField.setText(highlightededUnderMouse);
+
+            ORFLocation location = HighlightLogics.getHighlightededItemUnderMouseInfo(seqTextPane, mousePoint.x, mousePoint.y);
+            ORFInfoField.setText("Total length of genome: " + proteinLength + System.lineSeparator() + "Frame: " + readingFrame + System.lineSeparator() + "Length of ORF: " + Math.abs(location.getEnd() - location.getStart()) + System.lineSeparator() + "Start position: " + location.getStart() + System.lineSeparator() + "Stop position: " + location.getEnd());
+
+            locationOnGenome(location);
+            selectedDNASequence = sequenceString.substring(location.getStart() * 3, location.getEnd() * 3);
+//            System.out.println(highlightededUnderMouse);
+        }
+
+    }
+
+    private void locationOnGenome(ORFLocation location) {
+        /* 
+        Removes the old panel first and replaces it with a new panel on which the ORF in visualised on the genome
+        Uses code that is copied from the code that the GUI builder from Netbeans generates
+         */
+        Component oldPanel = fittingPanel.getComponent(0);
+        //System.out.println(oldPanel);
+        fittingPanel.remove(oldPanel);
+
+        JPanel orfVisual = new ORFViewPanel(location, proteinLength, oldPanel.getSize());
+
+        orfVisual.setBackground(Color.white);
+        fittingPanel.setBackground(Color.white);
+        orfVisual.setBorder(BorderFactory.createBevelBorder(1));
+//        orfVisual.setSize(new Dimension(843, 127));
+        
+        //<editor-fold defaultstate="collapsed" desc="Copied from generated code for layout">
+        javax.swing.GroupLayout drawPanelLayout = new javax.swing.GroupLayout(orfVisual);
+        orfVisual.setLayout(drawPanelLayout);
+        drawPanelLayout.setHorizontalGroup(
+                drawPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 0, Short.MAX_VALUE)
+        );
+        drawPanelLayout.setVerticalGroup(
+                drawPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 127, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout fittingPanelLayout = new javax.swing.GroupLayout(fittingPanel);
+        fittingPanel.setLayout(fittingPanelLayout);
+        fittingPanelLayout.setHorizontalGroup(
+                fittingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(orfVisual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        fittingPanelLayout.setVerticalGroup(
+                fittingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(orfVisual, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+//</editor-fold>
+
+        orfVisual.setBackground(Color.white);
+        fittingPanel.setBackground(Color.white);
+
+        //<editor-fold defaultstate="collapsed" desc="If I ever want to do multiple ORF in the line">
+//        for(Component comp:super.getComponents()){
+//            System.out.println(comp.toString());
+//        }
+//        int genomeLength = sequenceString.length();
+//        List<ORFLocation> locations = new ArrayList<>();
+//        locations.add(location);
+//
+//        //DrawFrame.showVisual(locations, genomeLength);
+//
+//        Graphics g = drawPanel.getGraphics();
+//
+//        int panelWidth = drawPanel.getWidth();
+//
+//        g.setColor(Color.black);
+//        g.fillRect(0, 10, 1000, 3);
+////        g.setColor(Color.red);
+//
+//        for (ORFLocation loc:locations){
+//            int startLoc = (int) ((loc.getStart()/ (float) genomeLength)*panelWidth);
+//            int endLoc = (int) ((loc.getEnd()/ (float) genomeLength)*panelWidth);
+//
+//            System.out.println(startLoc+"::"+endLoc);
+//
+//            g.setColor(Color.red);
+//            g.fillRect(startLoc, 10, endLoc-startLoc, 3);
+//        }
+//        Graphics graphics = drawPanel.getGraphics();
+//
+//        int drawSize = drawPanel.getSize().width;
+//
+//        graphics.setColor(Color.red);
+//        graphics.drawLine(10, 35, drawSize-10, 35);
+//
+//</editor-fold>
+    }
+
+    private void BLAST() {
+        if (!"".equals(selectedORFField.getText())) {
+            try {
+                System.out.println("Currently performing a BLAST");
+                // python D:\School\Java\Course8\ORF\PythonBLAST.py SMDSTSDTKLPDVIKIDDITSGKIDPNLIYNELERLKVEINILRNDMSLFIKALATIPQNQSQQEYYRVVALRLKTVQASIKDYCAQYNKLLPIINLGQIKLGHEVEILPQSQPTRLSTSNGSPNNNKGASVNGKNGKRNSLSNKSNGTNNGKAPNSGNTTNAGVKTGSNANQPIVL
+
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            exucuteBLAST.setEnabled(false);
+                            exucuteBLAST.setToolTipText("Currently performing a BLAST");
+                            String sequence = selectedORFField.getText();
+                            Process p = Runtime.getRuntime().exec(new String[]{"python", System.getProperty("user.dir") + "/PythonBLAST.py", sequence});
+                            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                            String ret = in.readLine();
+                            System.out.println("value is : " + ret);
+
+                            tempBLASTresults.setText("");
+                            for (String data : ret.split("\\$")) {
+                                tempBLASTresults.append(data + System.lineSeparator());
+                            }
+                            exucuteBLAST.setEnabled(true);
+                            exucuteBLAST.setToolTipText("Perform a BLAST");
+                        } catch (Exception e) {
+                            exucuteBLAST.setEnabled(true);
+                            exucuteBLAST.setToolTipText("Perform a BLAST");
+                            System.out.println(e);
+                        }
+                    }
+                }.start();
+
+            } catch (Exception ex) {
+                Logger.getLogger(ORFGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Please select an ORF first before attempting to BLAST");
+        }
+    }
+
+    private void showDNASeqOfORF() {
+        if (selectedDNASequence == null || selectedDNASequence.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select a ORF first");
+        } else {
+            showDNASeqTextArea.setText(selectedDNASequence);
+            ShowDNASequence.setVisible(true);
+        }
+    }
+
+    private void showDNASeqAsFasta() {
+        String fastaH = ">Unknown DNA sequence of length " + selectedDNASequence.length();
+        showDNASeqTextArea.setText(fastaH + System.lineSeparator());
+        showDNASeqTextArea.append(selectedDNASequence);
+    }
+
+    /* ****** End of code ****** */
     /**
      * @param args the command line arguments
      */
@@ -383,24 +781,52 @@ public class ORFGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea ORFInfoField;
+    private javax.swing.JFrame ShowDNASequence;
+    private javax.swing.JPanel drawPanel;
+    private javax.swing.JButton exucuteBLAST;
     private javax.swing.JFileChooser fileChooser;
+    private javax.swing.JPanel fittingPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuBar jMenuBar2;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JMenuItem openJMenu;
     private javax.swing.JComboBox<String> readingFramesComboBox;
+    private javax.swing.JMenu saveDNAAsFastaMenu;
     private javax.swing.JTextArea selectedORFField;
     private javax.swing.JEditorPane seqTextPane;
+    private javax.swing.JMenuItem showAsFastaMenu;
+    private javax.swing.JTextArea showDNASeqTextArea;
+    private javax.swing.JMenuItem showDNAofORFMenu;
+    private javax.swing.JTextArea tempBLASTresults;
+    private javax.swing.JTextArea testText;
+    private javax.swing.JLabel totalORFsLabel;
     // End of variables declaration//GEN-END:variables
-    private int readingFrame = 0;
+    private String readingFrame = "+1";
     private String sequenceString = "";
+    private String selectedDNASequence;
+    private int proteinLength;
+
+    private ORFLocation removeafter;
 }

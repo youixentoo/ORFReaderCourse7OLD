@@ -275,13 +275,13 @@ public class HighlightLogics {
         return highlightedText;
     }
 
-    public static BeginAndEnd getHighlightededItemUnderMouseInfo(JTextComponent textComp, int textAreaMouseXLocation, int textAreaMouseYLocation) {
+    public static ORFLocation getHighlightededItemUnderMouseInfo(JTextComponent textComp, int textAreaMouseXLocation, int textAreaMouseYLocation) {
         if (textComp.getText().isEmpty()) {return null;}
 
         Point pnt = new Point(textAreaMouseXLocation, textAreaMouseYLocation);
         int pos = textComp.viewToModel(pnt);
 
-        BeginAndEnd location = new BeginAndEnd();
+        ORFLocation location = new ORFLocation();
         Highlighter.Highlight[] allHighlights = textComp.getHighlighter().getHighlights();
         if (allHighlights.length > 0) {
             for (int i = 0; i < allHighlights.length; i++) {
