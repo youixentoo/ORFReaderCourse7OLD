@@ -8,14 +8,13 @@ Created on Tue Feb 27 10:43:19 2018
 from Bio.Blast import NCBIWWW, NCBIXML
 from sys import argv
 
-script, first = argv
-
 def main(arg):
     getBLAST(arg)
     
     
-def getBLAST(searchSequence):
-    BLASTResultAsXML = NCBIWWW.qblast(program='blastp',database='nr',expect='0.0001',sequence=searchSequence,matrix_name='BLOSUM62')
+    
+def getBLAST(arg):
+    BLASTResultAsXML = NCBIWWW.qblast(program=arg[1],database=arg[2],sequence=arg[3],expect=arg[4],hitlist_size=arg[5],matrix_name=arg[6],alignments=arg[7])
     
     BLASTData = NCBIXML.parse(BLASTResultAsXML)
     
@@ -52,4 +51,4 @@ def getBLAST(searchSequence):
     
    
     
-main(first)
+main(argv)

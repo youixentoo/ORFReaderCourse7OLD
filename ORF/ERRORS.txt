@@ -1,0 +1,5 @@
+OS: Windows 10
+Java Runtime: 1.8.0_152-b16
+Username: thijs
+User Home: C:\Users\thijs
+

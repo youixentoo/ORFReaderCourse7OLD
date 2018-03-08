@@ -33,9 +33,8 @@ public class ORFViewPanel extends JPanel {
     
     @Override
     public void paintComponent(Graphics g) {
-        super.setBackground(Color.white);
-        this.setBackground(Color.white);
-        
+        super.paintComponent(g);
+        super.setBackground(Color.white);       
 
         int drawSize = this.getSize().width;
         g.setColor(Color.black);
@@ -49,10 +48,6 @@ public class ORFViewPanel extends JPanel {
 
         g.setColor(Color.red);
         g.fillRect(startLoc, 10, endLoc - startLoc, 3);
-        
-//        super.setBackground(Color.white);
-//        this.setBackground(Color.white);
-
     }
 
 }
