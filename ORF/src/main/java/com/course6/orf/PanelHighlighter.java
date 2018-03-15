@@ -28,7 +28,7 @@ public class PanelHighlighter {
         String seq = sequence.toString();
         Matcher matcher;
 
-        Pattern pat = Pattern.compile("\\*[^\\*]{100,}");
+        Pattern pat = Pattern.compile("M[^\\*]{100,}");
         matcher = pat.matcher(seq);
 
         while (matcher.find()) {

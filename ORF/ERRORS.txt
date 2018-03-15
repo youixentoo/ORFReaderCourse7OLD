@@ -1,5 +1,6 @@
 OS: Windows 10
 Java Runtime: 1.8.0_152-b16
+Current working dir: D:\School\Java\Course8\ORF
 Username: thijs
 User Home: C:\Users\thijs
 

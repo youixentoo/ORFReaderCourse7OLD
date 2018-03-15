@@ -14,10 +14,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -118,6 +122,8 @@ public class ORFGUI extends javax.swing.JFrame {
         jLabel19 = new javax.swing.JLabel();
         saveSettingsButton = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        BLASTSeqResJList = new javax.swing.JList<>();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         selectedORFField = new javax.swing.JTextArea();
@@ -387,6 +393,14 @@ public class ORFGUI extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         jLabel7.setText("Database Settings:");
 
+        BLASTSeqResJList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        BLASTSeqResJList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                BLASTSeqResJListValueChanged(evt);
+            }
+        });
+        jScrollPane5.setViewportView(BLASTSeqResJList);
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -424,9 +438,13 @@ public class ORFGUI extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel7))
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 631, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(224, Short.MAX_VALUE))
+                        .addComponent(jLabel7)
+                        .addGap(0, 288, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 631, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {eValueCutoffTextfield, maxAlignmentsTextfield, sizeHitsListTextfield});
@@ -475,8 +493,10 @@ public class ORFGUI extends javax.swing.JFrame {
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 218, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
+                    .addComponent(jScrollPane5))
+                .addGap(14, 14, 14))
         );
 
         jTabbedPane1.addTab("BLAST", jPanel2);
@@ -580,6 +600,7 @@ public class ORFGUI extends javax.swing.JFrame {
                 readFile(filePath);
             } catch (Exception ex) {
                 System.out.println("problem accessing file" + file.getAbsolutePath());
+                //ErrorFile.savingErrors(ex.getStackTrace());
             }
 
         } else {
@@ -631,13 +652,20 @@ public class ORFGUI extends javax.swing.JFrame {
     private void sizeHitsListTextfieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_sizeHitsListTextfieldKeyPressed
         setOtherVars(evt);
     }//GEN-LAST:event_sizeHitsListTextfieldKeyPressed
-
+    // End of BLAST variables
+    
     private void saveSettingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveSettingsButtonActionPerformed
         saveSettings();
     }//GEN-LAST:event_saveSettingsButtonActionPerformed
 
+    private void BLASTSeqResJListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_BLASTSeqResJListValueChanged
+        if(evt.getValueIsAdjusting()){
+            BLASTResultsList(evt);
+        }
+    }//GEN-LAST:event_BLASTSeqResJListValueChanged
+
     private void saveSettings() {
-        JOptionPane.showMessageDialog(this, "none");
+        System.out.println(BLASTMap.toString());
     }
 
     private void setBLASTVars(java.awt.event.ActionEvent evt) {
@@ -805,20 +833,21 @@ public class ORFGUI extends javax.swing.JFrame {
                             exucuteBLAST.setEnabled(false);
                             exucuteBLAST.setToolTipText("Currently performing a BLAST");
                             String sequence = selectedORFField.getText();
-                            String[] BLASTArgs = {BLASTProgram, BLASTDatabase, sequence, String.valueOf(eValueCutOff), String.valueOf(maxListSize), BLASTMatrix, String.valueOf(maxAlignments)};
-                            System.out.println(Arrays.toString(BLASTArgs));
-                            Process p = Runtime.getRuntime().exec(new String[]{"python", System.getProperty("user.dir") + "/ORFFinderBLAST.py", BLASTProgram, BLASTDatabase, sequence, String.valueOf(eValueCutOff), String.valueOf(maxListSize), BLASTMatrix, String.valueOf(maxAlignments)});
-                            BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                            String ret = in.readLine();
-                            System.out.println("value is : " + ret);
-
-                            tempBLASTresults.setText("");
-                            for (String data : ret.split("\\$")) {
-                                tempBLASTresults.append(data + System.lineSeparator());
-                            }
+                            BLASTResults = BLASTData.getBLASTResult(BLASTProgram, BLASTDatabase, sequence, String.valueOf(eValueCutOff), String.valueOf(maxListSize), BLASTMatrix, String.valueOf(maxAlignments));
+                            
+                            BLASTMap = BLASTData.addToBLASTMap(sequence, BLASTResults, BLASTMap);
+                            
+                            String[] tempArray = BLASTMap.keySet().toArray(new String[BLASTMap.size()]);
+                            BLASTSeqResJList.setListData(tempArray);
+                            
                             exucuteBLAST.setEnabled(true);
                             exucuteBLAST.setToolTipText("Perform a BLAST");
-                        } catch (Exception e) {
+                        } catch (IOException e) {
+                            exucuteBLAST.setEnabled(true);
+                            exucuteBLAST.setToolTipText("Perform a BLAST");
+                            e.printStackTrace();
+                            ErrorFile.savingErrors(e.getStackTrace());
+                        } catch (Exception e){
                             exucuteBLAST.setEnabled(true);
                             exucuteBLAST.setToolTipText("Perform a BLAST");
                             e.printStackTrace();
@@ -833,6 +862,16 @@ public class ORFGUI extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Please select an ORF first before attempting to BLAST");
         }
+    }
+    
+    private void BLASTResultsList(javax.swing.event.ListSelectionEvent evt){
+        String selectedItem = BLASTSeqResJList.getSelectedValue();
+        List<BLASTResult> BLASTResultsList = (List<BLASTResult>) BLASTMap.get(selectedItem);
+        BLASTSeqResJList.setToolTipText(selectedItem);
+        tempBLASTresults.setText("");
+        BLASTResultsList.forEach((result) -> {
+            tempBLASTresults.append(result.toString());
+        });
     }
 
     private void showDNASeqOfORF() {
@@ -887,6 +926,7 @@ public class ORFGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JList<String> BLASTSeqResJList;
     private javax.swing.JTextArea ORFInfoField;
     private javax.swing.JFrame ShowDNASequence;
     private javax.swing.JComboBox<String> blastDatabaseProgram;
@@ -923,6 +963,7 @@ public class ORFGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
@@ -942,6 +983,7 @@ public class ORFGUI extends javax.swing.JFrame {
     private javax.swing.JTextArea tempBLASTresults;
     private javax.swing.JLabel totalORFsLabel;
     // End of variables declaration//GEN-END:variables
+    // Sequence variables:
     private String readingFrame = "+1";
     private String sequenceString = "";
     private String selectedDNASequence;
@@ -954,4 +996,6 @@ public class ORFGUI extends javax.swing.JFrame {
     private String BLASTProgram = "blastp";
     private String BLASTDatabase = "nr";
     private String BLASTMatrix = "BLOSUM62";
+    private List<BLASTResult> BLASTResults = new ArrayList<>();
+    private Map<String, List<BLASTResult>> BLASTMap = new HashMap<>();
 }

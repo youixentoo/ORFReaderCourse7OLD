@@ -20,13 +20,19 @@ public class ORFFinderPython {
         FileWriter fileWriter;
         try {
             fileWriter = new FileWriter(System.getProperty("user.dir") + "/ORFFinderBLAST.py");
-            fileWriter.write("from Bio.Blast import NCBIWWW, NCBIXML\n"
-                    + "import xml.etree.cElementTree as xmlParser\n"
-                    + "from sys import argv\n"
+            fileWriter.write("try:\n"
+                    + "\tfrom Bio.Blast import NCBIWWW\n"
+                    + "\timport xml.etree.cElementTree as xmlParser\n"
+                    + "\tfrom sys import argv\n"
+                    + "except Exception as exc:\n"
+                    + "\tprint(exc.with_traceback)"
                     + "\n"
                     + "\n"
                     + "def main(arg):\n"
-                    + "\tBLAST(arg)\n"
+                    + "\ttry:\n"
+                    + "\t\tBLAST(arg)\n"
+                    + "\texcept Exception as exc:\n"
+                    + "\t\tprint(exc.with_traceback)\n"
                     + "\n"
                     + "\n"
                     + "def BLAST(arg):\n"

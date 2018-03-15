@@ -1,10 +1,15 @@
-from Bio.Blast import NCBIWWW, NCBIXML
-import xml.etree.cElementTree as xmlParser
-from sys import argv
-
+try:
+	from Bio.Blast import NCBIWWW
+	import xml.etree.cElementTree as xmlParser
+	from sys import argv
+except Exception as exc:
+	print(exc.with_traceback)
 
 def main(arg):
-	BLAST(arg)
+	try:
+		BLAST(arg)
+	except Exception as exc:
+		print(exc.with_traceback)
 
 
 def BLAST(arg):
