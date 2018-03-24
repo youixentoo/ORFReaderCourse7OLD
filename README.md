@@ -8,7 +8,8 @@ If you use Netbeans, <a href="https://youtu.be/3ODSQ0EpoQI?list=LLIf5VI5xhBnqfYT
 
 # If you cannot BLAST:
 - Open your cmd and see if you can use python there, use "python --version" or something like that.
-- If that doesn't work, Python isn't correctly installed. In Windows you can manually add Python to your Path variables to fix it.
+- If that doesn't work, Python isn't (correctly) installed. 
+Install Python 3.6 to fix it or if you already have Python 3.6 installed: In Windows you can manually add Python to your Path variables to fix it that way.
 
 # Errors when running:
 Errors get saved in a "ERRORS.txt" file in the working directory
