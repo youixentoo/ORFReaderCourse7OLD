@@ -31,7 +31,6 @@ def BLAST(arg):
 		hitPositive = hit.findtext(".//Hsp/Hsp_positive")
 		hitGaps = hit.findtext(".//Hsp/Hsp_gaps")
 		hitAlignLength = hit.findtext(".//Hsp/Hsp_align-len")
-		print("BLAST result: "+str(index)+"$HitID: "+str(hitID)+"$HitDef: "+str(hitDef)+"$HitLength: "+str(hitLength)+"$HitBitScore: "+str(hitBitScore)+"$HitScore: "+str(hitScore)+"$HitIdentity: "+str(hitIdentity)+"$HitPositive: "+str(hitPositive)+"$HitGaps: "+str(hitGaps)+"$HitAlignLength: "+str(hitAlignLength)+"$E-value: "+str(hitEValue)+"$")
-
+		print("BLAST result: "+str(index)+"$HitID: "+str(hitID)+"$HitDef: "+str(hitDef)+"$HitLength: "+str(hitLength)+"$HitBitScore: "+str(hitBitScore)+"$HitScore: "+str(hitScore)+"$HitIdentity: "+str(hitIdentity)+"$HitPositive: "+str(hitPositive)+"$HitGaps: "+str(hitGaps)+"$HitAlignLength: "+str(hitAlignLength)+"$E-value: "+str(hitEValue)+"$\n")
 
 main(argv)
