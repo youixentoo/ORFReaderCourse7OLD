@@ -15,46 +15,29 @@ import com.course6.orf.file.ReadingFileAndFrames;
 import com.course6.orf.blast.BLASTResult;
 import com.course6.orf.blast.BLASTData;
 import com.course6.orf.panel.ALLORFOnGenomePanel;
-import com.sun.javafx.font.FontConstants;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
-
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.*;
 
 import javax.swing.JFileChooser;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
-
-import org.biojava.nbio.core.sequence.DNASequence;
 import org.biojava.nbio.core.sequence.ProteinSequence;
-import org.biojava.nbio.core.sequence.io.*;
-import org.biojava.nbio.core.exceptions.CompoundNotFoundException;
-import org.biojava.nbio.core.sequence.compound.NucleotideCompound;
-import org.biojava.nbio.core.sequence.template.SequenceView;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 class FastaFilter extends javax.swing.filechooser.FileFilter {
 
@@ -101,7 +84,6 @@ public class ORFGUI extends javax.swing.JFrame {
         jMenuBar2 = new javax.swing.JMenuBar();
         saveDNAAsFastaMenu = new javax.swing.JMenu();
         showAsFastaMenu = new javax.swing.JMenuItem();
-        saveAsDNAseqFasta = new javax.swing.JMenuItem();
         ShowBLASTResultsFrame = new javax.swing.JFrame();
         jScrollPane7 = new javax.swing.JScrollPane();
         blastResultsScreen = new javax.swing.JTextArea();
@@ -113,7 +95,6 @@ public class ORFGUI extends javax.swing.JFrame {
         jMenuBar4 = new javax.swing.JMenuBar();
         jMenu4 = new javax.swing.JMenu();
         showAsFastaAllORF = new javax.swing.JMenuItem();
-        saveAsFastaAllORF = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel1 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -136,8 +117,6 @@ public class ORFGUI extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jSeparator2 = new javax.swing.JSeparator();
         exucuteBLAST = new javax.swing.JButton();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        tempBLASTresults = new javax.swing.JTextArea();
         jSeparator3 = new javax.swing.JSeparator();
         blastMatrixCombo = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
@@ -157,6 +136,8 @@ public class ORFGUI extends javax.swing.JFrame {
         jScrollPane5 = new javax.swing.JScrollPane();
         BLASTSeqResJList = new javax.swing.JList<>();
         stopBLASTButton = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        uselessDBButton = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         selectedORFField = new javax.swing.JTextArea();
@@ -191,14 +172,6 @@ public class ORFGUI extends javax.swing.JFrame {
             }
         });
         saveDNAAsFastaMenu.add(showAsFastaMenu);
-
-        saveAsDNAseqFasta.setText("Save as Fasta...");
-        saveAsDNAseqFasta.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveAsDNAseqFastaActionPerformed(evt);
-            }
-        });
-        saveDNAAsFastaMenu.add(saveAsDNAseqFasta);
 
         jMenuBar2.add(saveDNAAsFastaMenu);
 
@@ -249,10 +222,9 @@ public class ORFGUI extends javax.swing.JFrame {
             .addGroup(ShowBLASTResultsFrameLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(161, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        ShowAllORFFrame.setPreferredSize(new java.awt.Dimension(500, 450));
         ShowAllORFFrame.setSize(new java.awt.Dimension(500, 450));
 
         jScrollPane8.setSize(ShowAllORFFrame.getWidth(), jScrollPane8.getHeight());
@@ -271,14 +243,6 @@ public class ORFGUI extends javax.swing.JFrame {
             }
         });
         jMenu4.add(showAsFastaAllORF);
-
-        saveAsFastaAllORF.setText("Save as Fasta...");
-        saveAsFastaAllORF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveAsFastaAllORFActionPerformed(evt);
-            }
-        });
-        jMenu4.add(saveAsFastaAllORF);
 
         jMenuBar4.add(jMenu4);
 
@@ -359,7 +323,7 @@ public class ORFGUI extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 843, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 859, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -462,7 +426,7 @@ public class ORFGUI extends javax.swing.JFrame {
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
                             .addComponent(jLabel8))
-                        .addGap(0, 723, Short.MAX_VALUE)))
+                        .addGap(0, 739, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -489,10 +453,6 @@ public class ORFGUI extends javax.swing.JFrame {
                 exucuteBLASTActionPerformed(evt);
             }
         });
-
-        tempBLASTresults.setColumns(20);
-        tempBLASTresults.setRows(5);
-        jScrollPane3.setViewportView(tempBLASTresults);
 
         jSeparator3.setOrientation(javax.swing.SwingConstants.VERTICAL);
 
@@ -578,6 +538,15 @@ public class ORFGUI extends javax.swing.JFrame {
             }
         });
 
+        jLabel11.setText("Hier zouden database settings staan als de connectie ooit werkte");
+
+        uselessDBButton.setText("er komt een popup als er ooit een connectie wordt gemaakt");
+        uselessDBButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uselessDBButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -616,14 +585,17 @@ public class ORFGUI extends javax.swing.JFrame {
                                 .addComponent(exucuteBLAST)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel7)
-                        .addGap(0, 288, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 631, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel7))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(26, 26, 26)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(uselessDBButton)
+                                    .addComponent(jLabel11)))))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         jPanel2Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {eValueCutoffTextfield, maxAlignmentsTextfield, sizeHitsListTextfield});
@@ -668,14 +640,17 @@ public class ORFGUI extends javax.swing.JFrame {
                                     .addComponent(exucuteBLAST)
                                     .addComponent(saveSettingsButton)
                                     .addComponent(stopBLASTButton)))
-                            .addComponent(jLabel7))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addGap(53, 53, 53)
+                                .addComponent(jLabel11)
+                                .addGap(22, 22, 22)
+                                .addComponent(uselessDBButton)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 2, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
-                    .addComponent(jScrollPane5))
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 217, Short.MAX_VALUE)
                 .addGap(14, 14, 14))
         );
 
@@ -718,7 +693,7 @@ public class ORFGUI extends javax.swing.JFrame {
         });
         jMenu2.add(showDNAofORFMenu);
 
-        allORFsMenu.setText("Show sequence of all ORF's");
+        allORFsMenu.setText("Show DNA sequence of all ORF's");
         allORFsMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 allORFsMenuActionPerformed(evt);
@@ -795,7 +770,7 @@ public class ORFGUI extends javax.swing.JFrame {
 //                filePathTextField.setText(file.getAbsolutePath());
                 readFile(true);
             } catch (Exception ex) {
-                System.out.println("problem accessing file" + file.getAbsolutePath());
+                System.out.println("problem accessing file " + file.getAbsolutePath());
                 //ErrorFile.savingErrors(ex.getStackTrace());
             }
 
@@ -872,23 +847,92 @@ public class ORFGUI extends javax.swing.JFrame {
         showAllORFFasta();
     }//GEN-LAST:event_showAsFastaAllORFActionPerformed
 
-    private void saveAsFastaAllORFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsFastaAllORFActionPerformed
-        JOptionPane.showMessageDialog(this, "not implemented yet");
-    }//GEN-LAST:event_saveAsFastaAllORFActionPerformed
-
-    private void saveAsDNAseqFastaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveAsDNAseqFastaActionPerformed
-        JOptionPane.showMessageDialog(this, "not implemented yet");
-    }//GEN-LAST:event_saveAsDNAseqFastaActionPerformed
-
     private void fastaHeaderComboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fastaHeaderComboboxActionPerformed
         getHeader(evt);
     }//GEN-LAST:event_fastaHeaderComboboxActionPerformed
 
+    private void uselessDBButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_uselessDBButtonActionPerformed
+        databaseConnection();
+    }//GEN-LAST:event_uselessDBButtonActionPerformed
+
     private void saveSettings() {
-        blastResultsScreen.setText("test");
-        ShowBLASTResultsFrame.setVisible(true);
+
+        // Comboboxes dont need this, this is only extra for if you dont press "enter" on the textfields
+        
+        try {
+            eValueCutOff = Float.valueOf(eValueCutoffTextfield.getText());
+        } catch (NumberFormatException exc) {
+            eValueCutOff = 0.01f;
+            JOptionPane.showMessageDialog(this, "The given E-Value is invalid");
+        }
+
+        try {
+            maxAlignments = Integer.valueOf(maxAlignmentsTextfield.getText());
+        } catch (NumberFormatException exc) {
+            maxAlignments = 500;
+            JOptionPane.showMessageDialog(this, "The given number for maximum alignments is invalid");
+        }
+
+        try {
+            maxListSize = Integer.valueOf(sizeHitsListTextfield.getText());
+        } catch (NumberFormatException exc) {
+            maxListSize = 50;
+            JOptionPane.showMessageDialog(this, "The given number for maximum list size is invalid");
+        }
+
     }
 
+    private void databaseConnection() {
+        /*
+        Na ongeveer 5 uur proberen om de connectie te maken heb ik er geen zin meer in
+        */
+        String url = "jdbc:mysql://85.214.90.171:1521/owe7_pg8"; // Directe ip-adress van cytosine.nl
+
+        new Thread() {
+            @Override
+            public void run() {
+                uselessDBButton.setEnabled(false);
+                Statement stmt = null;
+                ResultSet rs = null;
+                try {
+                    Class.forName("com.mysql.jdbc.Driver").newInstance();
+                    Connection connection = DriverManager.getConnection(url, "owe7_pg8", "blaat1234");
+                    JOptionPane.showMessageDialog(ORFGUI.getWindows()[0], "Connectie"); // Kwam hier na 30 min nog steeds niet
+
+                    stmt = connection.createStatement();
+                    rs = stmt.executeQuery("SELECT * FROM Bestand");
+
+                    System.out.println(rs);
+
+                } catch (SQLException e) {
+                    throw new IllegalStateException("Cannot connect the database!", e);
+                } catch (Exception exc) {
+                    exc.printStackTrace();
+                } finally {
+                    if (rs != null) {
+                        try {
+                            rs.close();
+                        } catch (SQLException sqlEx) {
+                        } // ignore
+
+                        rs = null;
+                    }
+
+                    if (stmt != null) {
+                        try {
+                            stmt.close();
+                        } catch (SQLException sqlEx) {
+                        } // ignore
+
+                        stmt = null;
+                    }
+                }
+                uselessDBButton.setEnabled(true);
+            }
+        }.start();
+    }
+
+    // The combobox variables get assigned here.
     private void setBLASTVars(java.awt.event.ActionEvent evt) {
         JComboBox<String> options = (JComboBox<String>) evt.getSource();
         if (options == blastProgramCombo) {
@@ -900,6 +944,7 @@ public class ORFGUI extends javax.swing.JFrame {
         }
     }
 
+    // The actionperformed of the blast textfield options are set on "enter" and they get assigned here
     private void setOtherVars(java.awt.event.KeyEvent evt) {
         if (evt.getExtendedKeyCode() == 10) {
             JTextField component = (JTextField) evt.getSource();
@@ -927,20 +972,23 @@ public class ORFGUI extends javax.swing.JFrame {
             }
         }
     }
-    
-    private void getHeader(java.awt.event.ActionEvent evt){
+
+    // Gets the selected header from the combobox on the first tab, only really useful if you use multiple-fasta files
+    private void getHeader(java.awt.event.ActionEvent evt) {
         selectedHeader = ReadingFileAndFrames.comboboxSelectedItem(evt);
+        fastaHeaderCombobox.setToolTipText(selectedHeader);
         readFile(false);
     }
 
     // Gets the DNA string form the file
     private void readFile(boolean firstRun) {
-        // Leest een fasta bestand in dat wordt meegegeven van de fileChooser
+        // Reads the file you selected in the fileChooser
         String fileString = file.getAbsolutePath();
-        if(firstRun){
+        if (firstRun) {
+            // Only the fileChooser can give a "true" so the combobox with headers gets refreshed.
             ReadingFileAndFrames.setFastaHeaders(fileString, fastaHeaderCombobox);
-            //selectedHeader = fastaHeaderCombobox.getItemAt(0);
         }
+        // Continues with the sequence of the selected header, at first run it's the first one in the combobox/file
         sequenceString = ReadingFileAndFrames.readHeader(selectedHeader, fileString);
         highlightedFrame();
     }
@@ -951,7 +999,9 @@ public class ORFGUI extends javax.swing.JFrame {
             highlightedFrame();
         }
     }
-
+    /*
+    This method covers the translating from a DNA sequence to Protein, highlights all the ORF's in the sequence and saves all the found ORF's in a List
+    */
     private void highlightedFrame() {
         ProteinSequence protSeq = ReadingFileAndFrames.getReadingFrameSequence(readingFrame, sequenceString);
         proteinLength = protSeq.getLength();
@@ -961,18 +1011,21 @@ public class ORFGUI extends javax.swing.JFrame {
 
     // Gets the selected item on a mouse click and gets the start and end position of the highlight
     private void highlightedItemAndStats(java.awt.event.MouseEvent evt) {
+        // Position of the mouse
         Point mousePoint = evt.getPoint();
-
+        
+        // This is only ever useful if there is a sequence in the first place
         if (!sequenceString.isEmpty()) {
             String highlightededUnderMouse = HighlightLogics.getHighlightededUnderMouse(seqTextPane, mousePoint.x, mousePoint.y);
             selectedORFField.setText(highlightededUnderMouse);
 
             ORFLocation location = HighlightLogics.getHighlightededItemUnderMouseInfo(seqTextPane, mousePoint.x, mousePoint.y);
             ORFInfoField.setText("Total length of genome: " + proteinLength + System.lineSeparator() + "Frame: " + readingFrame + System.lineSeparator() + "Length of ORF: " + Math.abs(location.getEnd() - location.getStart()) + System.lineSeparator() + "Start position: " + location.getStart() + System.lineSeparator() + "Stop position: " + location.getEnd());
-
+            
+            // For visualisation on the second tab
             locationOnGenome(location);
+            // DNA sequence of selected ORF
             selectedDNASequence = sequenceString.substring(location.getStart() * 3, location.getEnd() * 3);
-//            System.out.println(highlightededUnderMouse);
         }
 
     }
@@ -982,14 +1035,14 @@ public class ORFGUI extends javax.swing.JFrame {
         Removes the old panel first and replaces it with a new panel on which the ORF in visualised on the genome
         Uses code that is copied from the code that the GUI builder from Netbeans generates
          */
-        Component oldPanelTop = fittingPanel.getComponent(0);
+        Component oldPanelTop = fittingPanel.getComponent(0); // Only component in the fitting panel is the other panel
         fittingPanel.remove(oldPanelTop);
 
         JPanel orfVisual = new ORFViewPanel(location, proteinLength, oldPanelTop.getSize());
 
         orfVisual.setBackground(Color.white);
 
-        Component oldPanelBottom = fittingPanel2.getComponent(0);
+        Component oldPanelBottom = fittingPanel2.getComponent(0);// Only component in the fitting panel is the other panel
         fittingPanel2.remove(oldPanelBottom);
 
         JPanel AllOrfVisual = new ALLORFOnGenomePanel(AllOrfLocations, location, proteinLength, oldPanelBottom.getSize());
@@ -1046,72 +1099,44 @@ public class ORFGUI extends javax.swing.JFrame {
         );
 
 //</editor-fold>
-        //<editor-fold defaultstate="collapsed" desc="If I ever want to do multiple ORF in the line">
-//        for(Component comp:super.getComponents()){
-//            System.out.println(comp.toString());
-//        }
-//        int genomeLength = sequenceString.length();
-//        List<ORFLocation> locations = new ArrayList<>();
-//        locations.add(location);
-//
-//        //DrawFrame.showVisual(locations, genomeLength);
-//
-//        Graphics g = drawPanel.getGraphics();
-//
-//        int panelWidth = drawPanel.getWidth();
-//
-//        g.setColor(Color.black);
-//        g.fillRect(0, 10, 1000, 3);
-////        g.setColor(Color.red);
-//
-//        for (ORFLocation loc:locations){
-//            int startLoc = (int) ((loc.getStart()/ (float) genomeLength)*panelWidth);
-//            int endLoc = (int) ((loc.getEnd()/ (float) genomeLength)*panelWidth);
-//
-//            System.out.println(startLoc+"::"+endLoc);
-//
-//            g.setColor(Color.red);
-//            g.fillRect(startLoc, 10, endLoc-startLoc, 3);
-//        }
-//        Graphics graphics = drawPanel.getGraphics();
-//
-//        int drawSize = drawPanel.getSize().width;
-//
-//        graphics.setColor(Color.red);
-//        graphics.drawLine(10, 35, drawSize-10, 35);
-//
-//</editor-fold>
+
     }
-    
+    /*
+    This method creates the python script needed for performing the BLAST, runs it and processes the BLAST data
+    */
     private void BLAST() {
         if (!"".equals(selectedORFField.getText())) {
             try {
 
                 System.out.println("Currently performing a BLAST");
-                // python D:\School\Java\Course8\ORF\PythonBLAST.py SMDSTSDTKLPDVIKIDDITSGKIDPNLIYNELERLKVEINILRNDMSLFIKALATIPQNQSQQEYYRVVALRLKTVQASIKDYCAQYNKLLPIINLGQIKLGHEVEILPQSQPTRLSTSNGSPNNNKGASVNGKNGKRNSLSNKSNGTNNGKAPNSGNTTNAGVKTGSNANQPIVL
                 ORFFinderPython.createBLASTScript();
 
-                blastThread = new Thread() {
+                blastThread = new Thread() { // Stops it from locking the application
                     @Override
                     public void run() {
                         try {
                             exucuteBLAST.setEnabled(false);
                             exucuteBLAST.setToolTipText("Currently performing a BLAST");
                             stopBLASTButton.setEnabled(true);
+                            
                             String sequence;
+                            
+                            // Checks which sequence is needed to perform the selected BLAST
                             if ("blastn".equals(BLASTProgram) | "blastx".equals(BLASTProgram) | "tblastx".equals(BLASTProgram)) {
                                 sequence = selectedDNASequence;
                             } else {
                                 sequence = selectedORFField.getText();
                             }
-                            //System.out.println(sequence);
+                            
                             BLASTResults = BLASTData.getBLASTResult(BLASTProgram, BLASTDatabase, sequence, String.valueOf(eValueCutOff), String.valueOf(maxListSize), BLASTMatrix, String.valueOf(maxAlignments));
 
                             BLASTMap = BLASTData.addToBLASTMap(sequence, BLASTResults, BLASTMap);
-
+                            
+                            // Puts the keys from the HashMap containing all the BLAST data in a JList for the user to select a BLASt result.
                             String[] tempArray = BLASTMap.keySet().toArray(new String[BLASTMap.size()]);
                             BLASTSeqResJList.setListData(tempArray);
-                            JOptionPane.showMessageDialog(null, "Done with this");
+                            
+                            JOptionPane.showMessageDialog(ORFGUI.getWindows()[0], "Done with BLAST");
                             exucuteBLAST.setEnabled(true);
                             exucuteBLAST.setToolTipText("Perform a BLAST");
                             stopBLASTButton.setEnabled(false);
@@ -1137,11 +1162,15 @@ public class ORFGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Please select an ORF first before attempting to BLAST");
         }
     }
-
+    /*
+    Shows the BLAST results of the selected ORF from the JList,
+    this gets displayed in a different frame
+    */
     private void BLASTResultsList(javax.swing.event.ListSelectionEvent evt) {
         String selectedItem = BLASTSeqResJList.getSelectedValue();
         List<BLASTResult> BLASTResultsList = (List<BLASTResult>) BLASTMap.get(selectedItem);
         BLASTSeqResJList.setToolTipText(selectedItem);
+        
         blastResultsScreen.setText("");
         if (BLASTResultsList.isEmpty()) {
             blastResultsScreen.setText("No results available");
@@ -1152,13 +1181,9 @@ public class ORFGUI extends javax.swing.JFrame {
         });
         ShowBLASTResultsFrame.setVisible(true);
 
-        tempBLASTresults.setText("");
-        BLASTResultsList.forEach((result) -> {
-            tempBLASTresults.append(result.toString());
-            tempBLASTresults.append(System.lineSeparator());
-        });
     }
 
+    // Stop the current BLAST from running
     private void stopBLAST() {
         stopBLASTButton.setEnabled(false);
         exucuteBLAST.setEnabled(true);
@@ -1170,6 +1195,7 @@ public class ORFGUI extends javax.swing.JFrame {
         }
     }
 
+    // Opens a window which shows the DNA sequence of the currently selected ORF
     private void showDNASeqOfORF() {
         if (selectedDNASequence == null || selectedDNASequence.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please select a ORF first");
@@ -1179,32 +1205,35 @@ public class ORFGUI extends javax.swing.JFrame {
         }
     }
 
+    // Shows ^ method in a fasta format
     private void showDNASeqAsFasta() {
-        String fastaH = ">Unknown DNA sequence of length " + selectedDNASequence.length()+ " reading frame: "+readingFrame;
+        String fastaH = ">Unknown DNA sequence of length " + selectedDNASequence.length() + " reading frame: " + readingFrame;
         showDNASeqTextArea.setText(fastaH + System.lineSeparator());
         showDNASeqTextArea.append(selectedDNASequence);
     }
 
+    // Opens a window which shows all the DNA sequences of all the ORF's in the currently selected frame
     private void showAllORFs() {
         if (AllOrfLocations == null || AllOrfLocations.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please open a file first");
         } else {
             for (ORFLocation location : AllOrfLocations) {
-                String seq = sequenceString.substring(location.getStart(), location.getEnd());
+                String seq = sequenceString.substring(location.getStart()*3, location.getEnd()*3);
                 System.out.println(seq);
-                AllORFsTextArea.append(seq+System.lineSeparator());
+                AllORFsTextArea.append(seq + System.lineSeparator());
             }
             ShowAllORFFrame.setVisible(true);
         }
     }
 
+    // Shows the ORF's of ^ method in fasta format
     private void showAllORFFasta() {
         AllORFsTextArea.setText("");
 
         int loc = 0;
         for (ORFLocation location : AllOrfLocations) {
-            String fastaH = ">Unknown ORF " + loc + " of length " + location.getLength()+" reading frame: "+readingFrame;
-            String seq = sequenceString.substring(location.getStart(), location.getEnd());
+            String fastaH = ">Unknown ORF " + loc + " of length " + location.getLength() + " reading frame: " + readingFrame;
+            String seq = sequenceString.substring(location.getStart()*3, location.getEnd()*3);
             AllORFsTextArea.append(fastaH + System.lineSeparator() + seq + System.lineSeparator());
             loc++;
         }
@@ -1267,6 +1296,7 @@ public class ORFGUI extends javax.swing.JFrame {
     private javax.swing.JPanel fittingPanel;
     private javax.swing.JPanel fittingPanel2;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
@@ -1295,7 +1325,6 @@ public class ORFGUI extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
@@ -1308,8 +1337,6 @@ public class ORFGUI extends javax.swing.JFrame {
     private javax.swing.JTextField maxAlignmentsTextfield;
     private javax.swing.JMenuItem openJMenu;
     private javax.swing.JComboBox<String> readingFramesComboBox;
-    private javax.swing.JMenuItem saveAsDNAseqFasta;
-    private javax.swing.JMenuItem saveAsFastaAllORF;
     private javax.swing.JMenu saveDNAAsFastaMenu;
     private javax.swing.JButton saveSettingsButton;
     private javax.swing.JTextArea selectedORFField;
@@ -1320,8 +1347,8 @@ public class ORFGUI extends javax.swing.JFrame {
     private javax.swing.JMenuItem showDNAofORFMenu;
     private javax.swing.JTextField sizeHitsListTextfield;
     private javax.swing.JButton stopBLASTButton;
-    private javax.swing.JTextArea tempBLASTresults;
     private javax.swing.JLabel totalORFsLabel;
+    private javax.swing.JButton uselessDBButton;
     // End of variables declaration//GEN-END:variables
     // Sequence variables:
     private String readingFrame = "+1";

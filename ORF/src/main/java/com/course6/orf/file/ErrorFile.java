@@ -19,15 +19,21 @@ import java.util.logging.Logger;
  */
 public class ErrorFile {
 
+    /** Literally checks if the "ERRORS.txt" file exists
+     *
+     */
     public static void checkIfFileExists() {
         try {
             FileReader fileReader = new FileReader(System.getProperty("user.dir") +File.separator+"ERRORS.txt");
         } catch (Exception exc) {
-            System.out.println("createfiel");
+            System.out.println("needs to create file");
             createTheFile();
         }
     }
-
+    
+    /*
+    Creates the error file if it didn't exist already, adds some random pieces of information
+    */
     private static void createTheFile() {
         File file = new File(System.getProperty("user.dir")+File.separator+"ERRORS.txt");
         try {
@@ -46,6 +52,10 @@ public class ErrorFile {
 
     }
 
+    /**Saves the error to the errors file
+     *
+     * @param error The error
+     */
     public static void savingErrors(String error) {
         try {
             FileWriter fileWriter = new FileWriter(System.getProperty("user.dir")+File.separator+"ERRORS.txt",true);
@@ -57,6 +67,10 @@ public class ErrorFile {
         }
     }
     
+    /**Saves a <code>String[]</code> containing errors
+     *
+     * @param error The <code>String[]</code> containing the errors
+     */
     public static void savingErrors(String[] error){
         try{
             FileWriter fileWriter = new FileWriter(System.getProperty("user.dir")+File.separator+"ERRORS.txt",true);
@@ -70,6 +84,10 @@ public class ErrorFile {
         }
     }
     
+    /**Saves the <code>StackTraceElement[]</code> to the errors file
+     *
+     * @param error The <code>StackTraceElement[]</code>, Exception.getStackTrace()
+     */
     public static void savingErrors(StackTraceElement[] error){
         try{
             FileWriter fileWriter = new FileWriter(System.getProperty("user.dir")+File.separator+"ERRORS.txt",true);

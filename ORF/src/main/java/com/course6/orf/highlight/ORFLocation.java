@@ -5,7 +5,7 @@
  */
 package com.course6.orf.highlight;
 
-/**
+/** The start and end position of an ORF, these objects need to keep the same order as the ORF sequences stored elsewhere.
  *
  * @author thijs
  */
@@ -16,6 +16,11 @@ public class ORFLocation {
     public ORFLocation(){
     }
     
+    /**
+     *
+     * @param start The start position of the ORF on the sequence
+     * @param end The end position of the ORF on the sequence
+     */
     public ORFLocation(int start, int end) {
         this.start = start;
         this.end = end;

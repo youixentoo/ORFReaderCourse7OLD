@@ -5,23 +5,12 @@
  */
 package com.course6.orf.blast;
 
-/**
+/** An object to store the information that BLAST returns
  *
  * @author thijs
  */
 public class BLASTResult {
-    /*
-    hitEValue = hit.findtext(".//Hsp/Hsp_evalue")
-        hitID = hit.findtext(".//Hit_id")
-        hitDef = hit.findtext(".//Hit_def")
-        hitLength = hit.findtext(".//Hit_len")
-        hitBitScore = hit.findtext(".//Hsp/Hsp_bit-score")
-        hitScore = hit.findtext(".//Hsp/Hsp_score")
-        hitIdentity = hit.findtext(".//Hsp/Hsp_identity")
-        hitPositive = hit.findtext(".//Hsp/Hsp_positive")
-        hitGaps = hit.findtext(".//Hsp/Hsp_gaps")
-        hitAlignLength = hit.findtext(".//Hsp/Hsp_align-len")
-    */
+    
     private int resultNumber;
     private double eValue;
     private String referenceID;

@@ -12,7 +12,7 @@ import java.awt.Graphics;
 import java.util.List;
 import javax.swing.JPanel;
 
-/**
+/** A panel in which all the found ORF's get displayed, current selected ORF in in a different color
  *
  * @author thijs
  */
@@ -23,6 +23,13 @@ public class ALLORFOnGenomePanel extends JPanel {
     private int genomeLength;
     private Dimension dimension;
 
+    /**
+     *
+     * @param orfLocations <code>List</code> containing all the <code>ORFLocation</code> objects
+     * @param selectedORF The currently selected ORF's <code>ORFLocation</code> object
+     * @param genomeLength The total length of the genome
+     * @param dimension The dimensions of the panel
+     */
     public ALLORFOnGenomePanel(List<ORFLocation> orfLocations, ORFLocation selectedORF, int genomeLength, Dimension dimension) {
         this.locations = orfLocations;
         this.selectedORF = selectedORF;
@@ -37,6 +44,7 @@ public class ALLORFOnGenomePanel extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
+        //Drawing of the locations
         super.paintComponent(g);
         super.setBackground(Color.white);
 

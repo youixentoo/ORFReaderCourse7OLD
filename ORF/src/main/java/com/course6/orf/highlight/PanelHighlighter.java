@@ -25,13 +25,21 @@ import org.biojava.nbio.core.sequence.ProteinSequence;
  * @author thijs
  */
 public class PanelHighlighter {
-    // Searches and highlights all the ORFs
+
+    /**Searches and highlights all the ORFs in a JEditorPane, at a minimal length of 100
+     *
+     * @param sequence The protein sequence in which the ORF's need to be highlighted
+     * @param label The Label in which to amount of found ORF's will be displayed
+     * @param editPane The JEditorpane in which the highlights get done and the sequence is displayed
+     * @return A <code>ArrayList</code> containing the locations of the ORF's
+     */
     public static List<ORFLocation> patternMatcher(ProteinSequence sequence, JLabel label, JEditorPane editPane) {
         int matches = 0;
         List<ORFLocation> orfs = new ArrayList<>();
         String seq = sequence.toString();
         Matcher matcher;
 
+        // Regex for searching the ORF's
         Pattern pat = Pattern.compile("M[^\\*]{100,}");
         matcher = pat.matcher(seq);
 

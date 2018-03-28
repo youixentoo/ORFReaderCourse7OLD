@@ -21,6 +21,12 @@ public class ORFViewPanel extends JPanel {
     private int genomeLength;
     private Dimension dimension;
 
+    /**
+     *
+     * @param location The <code>ORFLocation</code> object of the currently selected ORF
+     * @param genomeLength The total length of the genome
+     * @param dimension The dimensions of the panel
+     */
     public ORFViewPanel(ORFLocation location, int genomeLength, Dimension dimension) {
         this.location = location;
         this.genomeLength = genomeLength;
@@ -34,6 +40,7 @@ public class ORFViewPanel extends JPanel {
     
     @Override
     public void paintComponent(Graphics g) {
+        // Drawing
         super.paintComponent(g);
         super.setBackground(Color.white);       
 
@@ -43,8 +50,6 @@ public class ORFViewPanel extends JPanel {
 
         int startLoc = (int) ((location.getStart() / (float) genomeLength) * drawSize);
         int endLoc = (int) ((location.getEnd() / (float) genomeLength) * drawSize);
-
-//        System.out.println(startLoc + "::" + endLoc);
 
         g.setColor(Color.red);
         g.fillRect(startLoc, 10, endLoc - startLoc, 10);

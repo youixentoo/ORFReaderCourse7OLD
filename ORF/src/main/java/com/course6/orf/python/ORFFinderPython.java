@@ -7,11 +7,8 @@ package com.course6.orf.python;
 
 import com.course6.orf.file.ErrorFile;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
+/**Creates the Python script needed to perform the BLAST
  *
  * @author thijs
  */
