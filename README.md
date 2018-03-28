@@ -13,3 +13,5 @@ Install Python 3.6 to fix it or if you already have Python 3.6 installed: In Win
 
 # Errors when running:
 Errors get saved in a "ERRORS.txt" file in the working directory
+
+<a href="https://github.com/youixentoo/ORFReaderCourse7OLD">For the old repo</a>
